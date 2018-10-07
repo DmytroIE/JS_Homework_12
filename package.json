@@ -1,0 +1,25 @@
+{
+  "name": "JS_Homework_12",
+  "version": "1.0.0",
+  "description": "",
+  "main": "script.js",
+  "scripts": {
+    "sass": "gulp sass"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DmytroIE/JS_Homework_12.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DmytroIE/JS_Homework_12/issues"
+  },
+  "homepage": "https://github.com/DmytroIE/JS_Homework_12#readme",
+  "devDependencies": {
+    "browser-sync": "^2.26.0",
+    "gulp": "^3.9.1",
+    "gulp-sass": "^4.0.1"
+  }
+}
