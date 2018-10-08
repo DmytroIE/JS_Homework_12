@@ -4,9 +4,32 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Document</title>
+  <title>JS_Homework_12</title>
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-  <script src="script.js"> </script>
+  <section class="urlinfo">
+    <form action="" id="urlinfo-form" class = "urlinfo__input-form">
+      <input type="text" name="input" id="" class = "urlinfo__input" placeholder = "Input URL">
+      <input type="submit" name="submit" class = "urlinfo__button" value="Добавить">
+    </form>
+    <ul id="url-list" class="urlinfo__list">
+
+    </ul>
+
+  </section>
+
+  <div class="spinner" id="spinner"><div></div><div></div><div></div><div></div></div>
+
+  <div id="err-modal" class="err-modal err-modal--hidden">
+    <p class="err-modal__text"></p>
+    <a href="#" class="err-modal__cls-button">Закрыть</a>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"> </script>
+  <script src="js/jQuery-uuid.js"> </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.12/handlebars.runtime.min.js"> </script>
+  <script src="js/templatesCompiled.js"> </script>
+  <script src="js/script.js"> </script>
 </body>
 </html>

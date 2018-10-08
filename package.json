@@ -4,7 +4,8 @@
   "description": "",
   "main": "script.js",
   "scripts": {
-    "sass": "gulp sass"
+    "start": "gulp start",
+    "template": "handlebars src/templates/ListItem -f src/js/templatesCompiled.js"
   },
   "repository": {
     "type": "git",
@@ -18,8 +19,17 @@
   },
   "homepage": "https://github.com/DmytroIE/JS_Homework_12#readme",
   "devDependencies": {
+    "@babel/core": "^7.1.2",
+    "@babel/preset-env": "^7.1.0",
     "browser-sync": "^2.26.0",
     "gulp": "^3.9.1",
-    "gulp-sass": "^4.0.1"
+    "gulp-autoprefixer": "^6.0.0",
+    "gulp-babel": "^8.0.0",
+    "gulp-postcss": "^8.0.0",
+    "gulp-sass": "^4.0.1",
+    "run-sequence": "^2.2.1"
+  },
+  "dependencies": {
+    "handlebars": "^4.0.12"
   }
 }
