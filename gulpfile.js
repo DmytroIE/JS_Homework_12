@@ -8,7 +8,7 @@ const babel = require('gulp-babel');
 const postcss = require('gulp-postcss');
 //const autoprefixer = require('autoprefixer');
 const autoprefixer = require('gulp-autoprefixer');
-
+const shell = require('gulp-shell');
 
 gulp.task('html', () =>
   gulp
@@ -36,6 +36,16 @@ gulp.task('scripts', () => {
 }
 );
 
+// gulp.task('gulp-template', () =>{
+//   return gulp.src('./src/templates/*.*', {read: false})
+//   .pipe(shell([
+//     'handlebars src/templates/ListItem -f src/js/templatesCompiled.js'
+//   ]));
+
+// });
+
+gulp.task('gulp-template', shell.task('handlebars src/templates/ListItem -f src/js/templatesCompiled.js'))
+
 
 gulp.task('serve', function() { // ['sass'], зачем этот аргумент????
 
@@ -49,7 +59,8 @@ gulp.task('watch', function(){
   gulp.watch("src/scss/**/*.scss", ['sass']);
   gulp.watch('src/js/**/*.js', ['scripts']).on('change', browserSync.reload);
   gulp.watch("src/*.html", ['html']).on('change', browserSync.reload);
+  gulp.watch("src/templates/*", ['gulp-template']).on('change', browserSync.reload);
 })
 
 
-gulp.task('start', cb => sequence(['html', 'sass', 'scripts'],'serve', 'watch'));
+gulp.task('start', cb => sequence('gulp-template', ['html', 'sass', 'scripts'],'serve', 'watch'));
