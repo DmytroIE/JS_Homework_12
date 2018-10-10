@@ -17,7 +17,9 @@ time, mark, audio, video {
           box-sizing: border-box; }
 
 body {
-  position: relative; }
+  position: relative;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px; }
 
 .urlinfo__button, .record__del-button {
   padding: 5px 15px;
@@ -30,10 +32,13 @@ body {
   border-radius: 3px;
   cursor: pointer;
   overflow-wrap: break-word; }
+  .urlinfo__button:hover, .record__del-button:hover {
+    background-color: #a6d3db; }
 
 .urlinfo {
   width: 900px;
-  margin: 0 auto; }
+  margin: 0 auto;
+  padding-top: 20px; }
   .urlinfo__input-form {
     padding: 10px;
     border: 1px solid;
@@ -66,14 +71,16 @@ body {
       -ms-flex-align: center;
           align-items: center;
   border: 1px solid;
-  border-radius: 3px; }
+  border-radius: 3px;
+  padding: 5px;
+  -webkit-box-shadow: 5px 5px 2px grey;
+          box-shadow: 5px 5px 2px grey; }
   .record__title, .record__url, .record__descr {
-    overflow-wrap: break-word;
-    border: 1px solid; }
+    overflow-wrap: break-word; }
   .record__title {
     width: 150px; }
   .record__url {
-    width: 100px; }
+    width: 120px; }
   .record__descr {
     width: 250px; }
   .record__img-cont {
@@ -90,11 +97,11 @@ body {
       max-width: 100%;
       display: block;
       margin: 0 auto;
-      -webkit-transition: 0.5s -webkit-transform;
-      transition: 0.5s -webkit-transform;
-      -o-transition: 0.5s transform;
-      transition: 0.5s transform;
-      transition: 0.5s transform, 0.5s -webkit-transform; }
+      -webkit-transition: 0.5s -webkit-transform ease 0.3s;
+      transition: 0.5s -webkit-transform ease 0.3s;
+      -o-transition: 0.5s transform ease 0.3s;
+      transition: 0.5s transform ease 0.3s;
+      transition: 0.5s transform ease 0.3s, 0.5s -webkit-transform ease 0.3s; }
       .record__img-cont img:hover {
         -webkit-transform: scale(2);
             -ms-transform: scale(2);
@@ -166,23 +173,29 @@ body {
 .err-modal {
   position: absolute;
   width: 400px;
-  height: 250px;
+  min-height: 250px;
   left: 50%;
   -webkit-transform: translateX(-50%);
       -ms-transform: translateX(-50%);
           transform: translateX(-50%);
   top: 0px;
   background-color: #f1bebe;
-  padding: 10px;
+  padding: 50px 10px 10px;
   -webkit-transition: 1s all;
   -o-transition: 1s all;
   transition: 1s all; }
   .err-modal--hidden {
     top: -250px; }
+  .err-modal__preview {
+    text-align: center;
+    margin-bottom: 30px; }
   .err-modal__text {
     text-align: center;
-    margin-bottom: 150px; }
+    margin-bottom: 50px; }
   .err-modal__cls-button {
     display: block;
     text-decoration: none;
     text-align: center; }
+  .err-modal__icon {
+    width: 20px;
+    height: 20px; }

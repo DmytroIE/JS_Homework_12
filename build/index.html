@@ -6,6 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>JS_Homework_12</title>
   <link rel="stylesheet" href="css/styles.css">
+  <link href="https://fonts.googleapis.com/css?family=Poppins:400,600" rel="stylesheet">
   <script src="https://code.jquery.com/jquery-3.3.1.min.js"> </script>
   <script src="js/jQuery-uuid.js"> </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.12/handlebars.runtime.min.js"> </script>
@@ -25,8 +26,14 @@
   <div class="spinner" id="spinner"><div></div><div></div><div></div><div></div></div>
 
   <div id="err-modal" class="err-modal err-modal--hidden">
+    <p class="err-modal__preview">
+      <svg class="err-modal__icon" viewbox="0 0 1000 1000">
+        <path d="M752.9,375.1c0,39-31.6,70.7-70.7,70.7c-39,0-70.7-31.7-70.7-70.7s31.7-70.7,70.7-70.7C721.2,304.4,752.9,336,752.9,375.1z M317.8,304.4c-39,0-70.7,31.7-70.7,70.7c0,39,31.7,70.7,70.7,70.7c39.1,0,70.7-31.7,70.7-70.7S356.9,304.4,317.8,304.4z M304.9,718.6c44.3-64.4,117.3-102.8,195.1-102.8c77.9,0,150.8,38.4,195.1,102.8c13.6,19.7,40.5,24.6,60.1,11.1c19.7-13.5,24.6-40.5,11.2-60.1c-60.4-87.8-160-140.2-266.3-140.2c-106.3,0-205.9,52.4-266.3,140.2c-13.5,19.7-8.6,46.5,11.1,60.1c7.5,5.2,16.1,7.6,24.5,7.6C283,737.3,296.5,730.7,304.9,718.6z M990,783.3V216.7C990,102.7,897.2,10,783.2,10H216.7C102.7,10,10,102.7,10,216.7v566.5c0,114,92.7,206.7,206.7,206.7h566.5C897.2,990,990,897.3,990,783.3z M783.2,125.3c50.4,0,91.5,41,91.5,91.4v566.5c0,50.4-41,91.4-91.5,91.4H216.8c-50.4,0-91.4-41-91.4-91.4V216.7c0-50.4,41-91.4,91.4-91.4H783.2z"/>
+      </svg>
+      <span>Something went wrong!</span>
+    </p>
     <p class="err-modal__text"></p>
-    <a href="#" class="err-modal__cls-button">Закрыть</a>
+    <a href="#" class="err-modal__cls-button">Close</a>
   </div>
 
 

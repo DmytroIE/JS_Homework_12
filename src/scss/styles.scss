@@ -20,14 +20,9 @@ time, mark, audio, video {
 
 body {
   position: relative;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
 }
-
-
-// img {
-//   max-width: 100%;
-//   height: auto;
-//   display: block;
-// }
 
 %button {
   padding: 5px 15px;
@@ -40,12 +35,17 @@ body {
   border-radius: 3px;
   cursor: pointer;
   overflow-wrap: break-word; 
+
+  &:hover{
+    background-color: rgb(166, 211, 219);
+  }
 }
 
 
 .urlinfo {
   width: 900px;
   margin: 0 auto;
+  padding-top: 20px;
 
   &__input-form {
     padding: 10px;
@@ -79,38 +79,32 @@ body {
 
 .record {
   display:flex;
-  // flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   border: 1px solid;
   border-radius: 3px;
+  padding: 5px;
+  box-shadow: 5px 5px 2px grey;
 
   &__title,
   &__url,
   &__descr {
     overflow-wrap: break-word;
-    border: 1px solid;
   }
 
   &__title {
     width: 150px;
-     
   }
 
   &__url {
-    width: 100px;
-
+    width: 120px;
   }
 
   &__descr {
     width: 250px;
- 
   }
-  
-  // transform: translate(0,0);
+
   &__img-cont {
-    // max-height: 50px;
-    // max-width: 200px;
     height: 50px;
     width: 150px;
     display: flex;
@@ -121,7 +115,7 @@ body {
       max-width:100%;
       display: block;
       margin: 0 auto;
-      transition: 0.5s transform;
+      transition: 0.5s transform ease 0.3s;
 
       &:hover {
         transform: scale(2);
@@ -188,26 +182,36 @@ body {
 .err-modal {
   position: absolute;
   width: 400px;
-  height: 250px;
+  min-height: 250px;
   left: 50%;
   transform: translateX(-50%);
   top: 0px;
   background-color: rgb(241, 190, 190);
-  padding: 10px;
+  padding: 50px 10px 10px;
   transition: 1s all;
 
   &--hidden {
     top: -250px;
   }
 
+  &__preview {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
   &__text {
     text-align: center;
-    margin-bottom: 150px;
+    margin-bottom: 50px;
   }
 
   &__cls-button {
     display: block;
     text-decoration: none;
     text-align: center;
+  }
+
+  &__icon {
+    width: 20px;
+    height: 20px;
   }
 }

@@ -6,7 +6,9 @@ let listOfUUIDs = null;
 //localStorage.removeItem('listOfUUIDs');
 
 
-
+// работа с localStorage идет параллельно работе с основным массивом,
+// чтобы, если localStorage недоступно, то работа всей остальной части программы
+// оставалась без изменений
 if (storageAvailable('localStorage')) {
   listOfUUIDs = JSON.parse(localStorage.getItem('listOfUUIDs'));
   if (listOfUUIDs) {
@@ -22,8 +24,6 @@ if (storageAvailable('localStorage')) {
 
 renderList();
 
-
-
 //*************************GET HTML-ELEMENTS********************/
 const forms = {
 
@@ -36,51 +36,81 @@ const forms = {
 };
 
 
-
 //*********************************EVENTS*******************************/
+
+    //*********SUBMIT**********/
 function handleSubmit(evt) {
   evt.preventDefault();
-  addSpinner();
-
+  const URLChecker=/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/g;
   const requestString = forms.urlinfo.inputs.input.value.trim();
+  if (!URLChecker.test(requestString)) {
+    showErrModal('Invalid URL');
+    return;
+  }
+  addSpinner();
 
   getItem(requestString)
   .then(() => {
     renderList();
     removeSpinner();
   })
-  .catch(err => {console.log(err.message); removeSpinner(); showErrModal(err.message);});
+  .catch(err => {removeSpinner(); showErrModal(handleHTTPRequestError(err));});
   
   this.reset();
 }
 forms.urlinfo.form.addEventListener('submit', handleSubmit)
 
+function handleHTTPRequestError(err) {
+  if (err.code) {
+    switch (err.code) {
+      case 424: return 'URL is not found or doesn\'t exist in the database'; break;
+      case 502: return 'Server error';break;
+      default: return `Error with code ${err.code} has been occured`;
+    } 
+  }
+  return `Error ${err.message} has been occured`
+}
+
 function getItem(urlForRequest = 'https://www.google.com', accessKey = '5bb920a205cea06f38e7909709a72b521a4a9d1c05841') {
-  return window.fetch(`http://api.linkpreview.net/?key=${accessKey}&q=${urlForRequest}`)
+  return window.fetch(`https://api.linkpreview.net/?key=${accessKey}&q=${urlForRequest}`)
     .then(response => {
-      // console.log(response);
+      console.log(response);
       if (response.ok) {
         return response.json();
+      } else {
+        const err = new Error();
+        err.code = response.status;
+        throw err;
       }
-      throw new Error(`${response.statusText}`);
+      
     })
     .then(data => {
-      // console.log(data);
-      const newItem = {};
-      for (let key in data) {
-        newItem[key] = data[key];
-      }
-      newItem.uuid = $.uuid();
 
-      listOfUUIDs.unshift(newItem.uuid);
-      listOfURLs.unshift(newItem);
+      // добавляем, только если такой ссылки 
+      // (именно такой, которую вернул API) еще нет в массиве ссылок 
+      // (и, соответственно, в localStorage)
+      //debugger
+      const UUIDsPlacedIntoList = listOfURLs.map(item => item.url);
+      if (!UUIDsPlacedIntoList.includes(data.url)){
+        const newItem = {...data};
+        //for (let key in data) {
+        //  newItem[key] = data[key];
+        // }
+        newItem.uuid = $.uuid();
+        listOfURLs.unshift(newItem);
 
-      if (storageAvailable('localStorage')) {
-        localStorage.setItem(newItem.uuid, JSON.stringify(newItem));
+        if (storageAvailable('localStorage')) {
+          listOfUUIDs.unshift(newItem.uuid);
+          localStorage.setItem(newItem.uuid, JSON.stringify(newItem));
+        }
+      } else {
+        showErrModal('URL is already in the list');
       }
     })
 
 }
+
+    //*********DELETE**********/
 
 function handleDelete(target) {
   const uuidOfDelItem = target.parentElement.dataset.uuid;
@@ -95,6 +125,7 @@ function handleDelete(target) {
   renderList();
 
 }
+    //*********UNLOAD**********/
 
 window.addEventListener('unload', () =>{
 
@@ -106,7 +137,6 @@ window.addEventListener('unload', () =>{
 });
 
 function checkStorage() { //нужно,чтобы отслеживать, что кто-то вручную очистил хранилище
-
   if (storageAvailable('localStorage')) {
     const storageKeys = [];
     for (let i = 0; i < localStorage.length; i++) {
@@ -119,7 +149,6 @@ window.addEventListener('storage', checkStorage);
 
 
 //****************************RENDER*************************/
-
 
 function renderList() {
 
@@ -144,7 +173,7 @@ function removeSpinner() {
 const errModal = document.getElementById('err-modal');
 
 function showErrModal(errMessage) {
-  errModal.querySelector('.err-modal__text').textContent = 'Error: ' + errMessage;
+  errModal.querySelector('.err-modal__text').textContent = 'Ups: ' + errMessage;
   errModal.classList.remove('err-modal--hidden');
 }
 

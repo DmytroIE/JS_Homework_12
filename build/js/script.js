@@ -1,8 +1,15 @@
 "use strict";
 
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 //*************************START PROCEDURE*************************/
 var listOfURLs = [];
 var listOfUUIDs = null; //localStorage.removeItem('listOfUUIDs');
+// работа с localStorage идет параллельно работе с основным массивом,
+// чтобы, если localStorage недоступно, то работа всей остальной части программы
+// оставалась без изменений
 
 if (storageAvailable('localStorage')) {
   listOfUUIDs = JSON.parse(localStorage.getItem('listOfUUIDs'));
@@ -27,51 +34,91 @@ var forms = {
     }
   }
 }; //*********************************EVENTS*******************************/
+//*********SUBMIT**********/
 
 function handleSubmit(evt) {
   evt.preventDefault();
-  addSpinner();
+  var URLChecker = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/g;
   var requestString = forms.urlinfo.inputs.input.value.trim();
+
+  if (!URLChecker.test(requestString)) {
+    showErrModal('Invalid URL');
+    return;
+  }
+
+  addSpinner();
   getItem(requestString).then(function () {
     renderList();
     removeSpinner();
   }).catch(function (err) {
-    console.log(err.message);
     removeSpinner();
-    showErrModal(err.message);
+    showErrModal(handleHTTPRequestError(err));
   });
   this.reset();
 }
 
 forms.urlinfo.form.addEventListener('submit', handleSubmit);
 
+function handleHTTPRequestError(err) {
+  if (err.code) {
+    switch (err.code) {
+      case 424:
+        return 'URL is not found or doesn\'t exist in the database';
+        break;
+
+      case 502:
+        return 'Server error';
+        break;
+
+      default:
+        return "Error with code ".concat(err.code, " has been occured");
+    }
+  }
+
+  return "Error ".concat(err.message, " has been occured");
+}
+
 function getItem() {
   var urlForRequest = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'https://www.google.com';
   var accessKey = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '5bb920a205cea06f38e7909709a72b521a4a9d1c05841';
-  return window.fetch("http://api.linkpreview.net/?key=".concat(accessKey, "&q=").concat(urlForRequest)).then(function (response) {
-    // console.log(response);
+  return window.fetch("https://api.linkpreview.net/?key=".concat(accessKey, "&q=").concat(urlForRequest)).then(function (response) {
+    console.log(response);
+
     if (response.ok) {
       return response.json();
+    } else {
+      var err = new Error();
+      err.code = response.status;
+      throw err;
     }
-
-    throw new Error("".concat(response.statusText));
   }).then(function (data) {
-    // console.log(data);
-    var newItem = {};
+    // добавляем, только если такой ссылки 
+    // (именно такой, которую вернул API) еще нет в массиве ссылок 
+    // (и, соответственно, в localStorage)
+    //debugger
+    var UUIDsPlacedIntoList = listOfURLs.map(function (item) {
+      return item.url;
+    });
 
-    for (var key in data) {
-      newItem[key] = data[key];
-    }
+    if (!UUIDsPlacedIntoList.includes(data.url)) {
+      var newItem = _objectSpread({}, data); //for (let key in data) {
+      //  newItem[key] = data[key];
+      // }
 
-    newItem.uuid = $.uuid();
-    listOfUUIDs.unshift(newItem.uuid);
-    listOfURLs.unshift(newItem);
 
-    if (storageAvailable('localStorage')) {
-      localStorage.setItem(newItem.uuid, JSON.stringify(newItem));
+      newItem.uuid = $.uuid();
+      listOfURLs.unshift(newItem);
+
+      if (storageAvailable('localStorage')) {
+        listOfUUIDs.unshift(newItem.uuid);
+        localStorage.setItem(newItem.uuid, JSON.stringify(newItem));
+      }
+    } else {
+      showErrModal('URL is already in the list');
     }
   });
-}
+} //*********DELETE**********/
+
 
 function handleDelete(target) {
   var uuidOfDelItem = target.parentElement.dataset.uuid;
@@ -87,7 +134,8 @@ function handleDelete(target) {
   }
 
   renderList();
-}
+} //*********UNLOAD**********/
+
 
 window.addEventListener('unload', function () {
   if (storageAvailable('localStorage')) {
@@ -136,7 +184,7 @@ function removeSpinner() {
 var errModal = document.getElementById('err-modal');
 
 function showErrModal(errMessage) {
-  errModal.querySelector('.err-modal__text').textContent = 'Error: ' + errMessage;
+  errModal.querySelector('.err-modal__text').textContent = 'Ups: ' + errMessage;
   errModal.classList.remove('err-modal--hidden');
 }
 
