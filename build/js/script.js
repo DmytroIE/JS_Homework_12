@@ -6,21 +6,20 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 //*************************START PROCEDURE*************************/
 var listOfURLs = [];
-var listOfUUIDs = null; //localStorage.removeItem('listOfUUIDs');
+var listOfUUIDs = []; //localStorage.removeItem('listOfUUIDs');
 // работа с localStorage идет параллельно работе с основным массивом,
 // чтобы, если localStorage недоступно, то работа всей остальной части программы
 // оставалась без изменений
 
 if (storageAvailable('localStorage')) {
-  listOfUUIDs = JSON.parse(localStorage.getItem('listOfUUIDs'));
+  var localStorageRecord = localStorage.getItem('listOfUUIDs'); //
 
-  if (listOfUUIDs) {
+  if (localStorageRecord) {
+    listOfUUIDs = JSON.parse(localStorageRecord);
     listOfUUIDs.forEach(function (item) {
       listOfURLs.push(JSON.parse(localStorage.getItem(item)));
     });
     localStorage.removeItem('listOfUUIDs'); // удаляем, чтобы пользователь вручную не стер этот объект из local storage
-  } else {
-    listOfUUIDs = [];
   }
 }
 
@@ -147,17 +146,15 @@ window.addEventListener('unload', function () {
 
 function checkStorage() {
   //нужно,чтобы отслеживать, что кто-то вручную очистил хранилище
-  if (storageAvailable('localStorage')) {
-    var storageKeys = [];
+  var storageKeys = [];
 
-    for (var i = 0; i < localStorage.length; i++) {
-      storageKeys.push(localStorage.key(i));
-    }
-
-    listOfUUIDs = listOfUUIDs.filter(function (item) {
-      return storageKeys.includes(item);
-    });
+  for (var i = 0; i < localStorage.length; i++) {
+    storageKeys.push(localStorage.key(i));
   }
+
+  listOfUUIDs = listOfUUIDs.filter(function (item) {
+    return storageKeys.includes(item);
+  });
 }
 
 window.addEventListener('storage', checkStorage); //****************************RENDER*************************/
@@ -199,6 +196,7 @@ errModal.querySelector('.err-modal__cls-button').addEventListener('click', funct
 
 function storageAvailable(type) {
   try {
+    console.log('check storage');
     var storage = window[type],
         x = '__storage_test__';
     storage.setItem(x, x);

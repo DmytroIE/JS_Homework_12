@@ -2,7 +2,7 @@
 //*************************START PROCEDURE*************************/
 
 let listOfURLs = [];
-let listOfUUIDs = null;
+let listOfUUIDs = [];
 //localStorage.removeItem('listOfUUIDs');
 
 
@@ -10,15 +10,16 @@ let listOfUUIDs = null;
 // чтобы, если localStorage недоступно, то работа всей остальной части программы
 // оставалась без изменений
 if (storageAvailable('localStorage')) {
-  listOfUUIDs = JSON.parse(localStorage.getItem('listOfUUIDs'));
-  if (listOfUUIDs) {
-    listOfUUIDs.forEach(item => {
-      listOfURLs.push(JSON.parse(localStorage.getItem(item)));
-    });
-    localStorage.removeItem('listOfUUIDs'); // удаляем, чтобы пользователь вручную не стер этот объект из local storage
-  } else {
-    listOfUUIDs = [];
-  }
+
+  const localStorageRecord = localStorage.getItem('listOfUUIDs'); //
+  if(localStorageRecord) {
+    listOfUUIDs = JSON.parse(localStorageRecord);
+
+      listOfUUIDs.forEach(item => {
+        listOfURLs.push(JSON.parse(localStorage.getItem(item)));
+      });
+      localStorage.removeItem('listOfUUIDs'); // удаляем, чтобы пользователь вручную не стер этот объект из local storage
+  } 
   
 }
 
@@ -137,13 +138,13 @@ window.addEventListener('unload', () =>{
 });
 
 function checkStorage() { //нужно,чтобы отслеживать, что кто-то вручную очистил хранилище
-  if (storageAvailable('localStorage')) {
+
     const storageKeys = [];
     for (let i = 0; i < localStorage.length; i++) {
       storageKeys.push(localStorage.key(i));
     }
     listOfUUIDs = listOfUUIDs.filter(item => storageKeys.includes(item));
-  }
+
 }
 window.addEventListener('storage', checkStorage);
 
@@ -190,6 +191,7 @@ errModal.querySelector('.err-modal__cls-button').addEventListener('click', (e) =
 
 function storageAvailable(type) {
   try {
+      console.log('check storage');
       var storage = window[type],
           x = '__storage_test__';
       storage.setItem(x, x);
