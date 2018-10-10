@@ -1,27 +1,24 @@
+const KEY_PREFIX = 'URLapp';
+
 
 //*************************START PROCEDURE*************************/
 
 let listOfURLs = [];
-let listOfUUIDs = [];
-//localStorage.removeItem('listOfUUIDs');
-
 
 // работа с localStorage идет параллельно работе с основным массивом,
 // чтобы, если localStorage недоступно, то работа всей остальной части программы
 // оставалась без изменений
+
 if (storageAvailable('localStorage')) {
-
-  const localStorageRecord = localStorage.getItem('listOfUUIDs'); //
-  if(localStorageRecord) {
-    listOfUUIDs = JSON.parse(localStorageRecord);
-
-      listOfUUIDs.forEach(item => {
-        listOfURLs.push(JSON.parse(localStorage.getItem(item)));
-      });
-      localStorage.removeItem('listOfUUIDs'); // удаляем, чтобы пользователь вручную не стер этот объект из local storage
-  } 
-  
+  //const keyChecker = /URLapp[\w\d-]*/g;
+  for (let i = 0; i < localStorage.length; i++) {
+    if (localStorage.key(i).includes(KEY_PREFIX)) {
+      const item = JSON.parse(localStorage.getItem(localStorage.key(i)));
+      listOfURLs.push(item);
+    }
+  }
 }
+
 
 renderList();
 
@@ -94,14 +91,10 @@ function getItem(urlForRequest = 'https://www.google.com', accessKey = '5bb920a2
       const UUIDsPlacedIntoList = listOfURLs.map(item => item.url);
       if (!UUIDsPlacedIntoList.includes(data.url)){
         const newItem = {...data};
-        //for (let key in data) {
-        //  newItem[key] = data[key];
-        // }
-        newItem.uuid = $.uuid();
+        newItem.uuid = KEY_PREFIX + $.uuid();
         listOfURLs.unshift(newItem);
 
         if (storageAvailable('localStorage')) {
-          listOfUUIDs.unshift(newItem.uuid);
           localStorage.setItem(newItem.uuid, JSON.stringify(newItem));
         }
       } else {
@@ -118,36 +111,11 @@ function handleDelete(target) {
 
   listOfURLs = listOfURLs.filter(item=>item.uuid!==uuidOfDelItem);
 
-  listOfUUIDs = listOfUUIDs.filter(item=>item!==uuidOfDelItem);
-
   if (storageAvailable('localStorage')) {
     localStorage.removeItem(uuidOfDelItem);
   }
   renderList();
-
 }
-    //*********UNLOAD**********/
-
-window.addEventListener('unload', () =>{
-
-  if (storageAvailable('localStorage')) {
-    if (listOfUUIDs.length > 0) {
-      localStorage.setItem('listOfUUIDs', JSON.stringify(listOfUUIDs)); // а теперь из оп. памяти записываем в local storage
-    }
-  }
-});
-
-function checkStorage() { //нужно,чтобы отслеживать, что кто-то вручную очистил хранилище
-
-    const storageKeys = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      storageKeys.push(localStorage.key(i));
-    }
-    listOfUUIDs = listOfUUIDs.filter(item => storageKeys.includes(item));
-
-}
-window.addEventListener('storage', checkStorage);
-
 
 //****************************RENDER*************************/
 

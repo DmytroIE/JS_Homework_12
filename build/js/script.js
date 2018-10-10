@@ -4,22 +4,19 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-//*************************START PROCEDURE*************************/
-var listOfURLs = [];
-var listOfUUIDs = []; //localStorage.removeItem('listOfUUIDs');
-// работа с localStorage идет параллельно работе с основным массивом,
+var KEY_PREFIX = 'URLapp'; //*************************START PROCEDURE*************************/
+
+var listOfURLs = []; // работа с localStorage идет параллельно работе с основным массивом,
 // чтобы, если localStorage недоступно, то работа всей остальной части программы
 // оставалась без изменений
 
 if (storageAvailable('localStorage')) {
-  var localStorageRecord = localStorage.getItem('listOfUUIDs'); //
-
-  if (localStorageRecord) {
-    listOfUUIDs = JSON.parse(localStorageRecord);
-    listOfUUIDs.forEach(function (item) {
-      listOfURLs.push(JSON.parse(localStorage.getItem(item)));
-    });
-    localStorage.removeItem('listOfUUIDs'); // удаляем, чтобы пользователь вручную не стер этот объект из local storage
+  //const keyChecker = /URLapp[\w\d-]*/g;
+  for (var i = 0; i < localStorage.length; i++) {
+    if (localStorage.key(i).includes(KEY_PREFIX)) {
+      var item = JSON.parse(localStorage.getItem(localStorage.key(i)));
+      listOfURLs.push(item);
+    }
   }
 }
 
@@ -100,16 +97,12 @@ function getItem() {
     });
 
     if (!UUIDsPlacedIntoList.includes(data.url)) {
-      var newItem = _objectSpread({}, data); //for (let key in data) {
-      //  newItem[key] = data[key];
-      // }
+      var newItem = _objectSpread({}, data);
 
-
-      newItem.uuid = $.uuid();
+      newItem.uuid = KEY_PREFIX + $.uuid();
       listOfURLs.unshift(newItem);
 
       if (storageAvailable('localStorage')) {
-        listOfUUIDs.unshift(newItem.uuid);
         localStorage.setItem(newItem.uuid, JSON.stringify(newItem));
       }
     } else {
@@ -124,40 +117,14 @@ function handleDelete(target) {
   listOfURLs = listOfURLs.filter(function (item) {
     return item.uuid !== uuidOfDelItem;
   });
-  listOfUUIDs = listOfUUIDs.filter(function (item) {
-    return item !== uuidOfDelItem;
-  });
 
   if (storageAvailable('localStorage')) {
     localStorage.removeItem(uuidOfDelItem);
   }
 
   renderList();
-} //*********UNLOAD**********/
+} //****************************RENDER*************************/
 
-
-window.addEventListener('unload', function () {
-  if (storageAvailable('localStorage')) {
-    if (listOfUUIDs.length > 0) {
-      localStorage.setItem('listOfUUIDs', JSON.stringify(listOfUUIDs)); // а теперь из оп. памяти записываем в local storage
-    }
-  }
-});
-
-function checkStorage() {
-  //нужно,чтобы отслеживать, что кто-то вручную очистил хранилище
-  var storageKeys = [];
-
-  for (var i = 0; i < localStorage.length; i++) {
-    storageKeys.push(localStorage.key(i));
-  }
-
-  listOfUUIDs = listOfUUIDs.filter(function (item) {
-    return storageKeys.includes(item);
-  });
-}
-
-window.addEventListener('storage', checkStorage); //****************************RENDER*************************/
 
 function renderList() {
   var markup = listOfURLs.reduce(function (acc, curr) {
