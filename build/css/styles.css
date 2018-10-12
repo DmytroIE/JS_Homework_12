@@ -179,19 +179,32 @@ body {
       -ms-transform: translateX(-50%);
           transform: translateX(-50%);
   top: 0px;
-  background-color: #f1bebe;
-  padding: 50px 10px 10px;
+  background-color: #bed6f1;
+  padding: 40px 10px 10px;
   -webkit-transition: 1s all;
   -o-transition: 1s all;
-  transition: 1s all; }
+  transition: 1s all;
+  border-radius: 5px; }
   .err-modal--hidden {
     top: -250px; }
   .err-modal__preview {
     text-align: center;
     margin-bottom: 30px; }
   .err-modal__text {
-    text-align: center;
-    margin-bottom: 50px; }
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    word-wrap: break-word;
+    height: 90px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    border: 1px solid; }
   .err-modal__cls-button {
     display: block;
     text-decoration: none;

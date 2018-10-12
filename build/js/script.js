@@ -15,7 +15,7 @@ if (storageAvailable('localStorage')) {
   for (var i = 0; i < localStorage.length; i++) {
     if (localStorage.key(i).includes(KEY_PREFIX)) {
       var item = JSON.parse(localStorage.getItem(localStorage.key(i)));
-      listOfURLs.push(item);
+      listOfURLs.unshift(item);
     }
   }
 }
@@ -78,8 +78,7 @@ function getItem() {
   var urlForRequest = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'https://www.google.com';
   var accessKey = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '5bb920a205cea06f38e7909709a72b521a4a9d1c05841';
   return window.fetch("https://api.linkpreview.net/?key=".concat(accessKey, "&q=").concat(urlForRequest)).then(function (response) {
-    console.log(response);
-
+    //console.log(response);
     if (response.ok) {
       return response.json();
     } else {
@@ -163,7 +162,7 @@ errModal.querySelector('.err-modal__cls-button').addEventListener('click', funct
 
 function storageAvailable(type) {
   try {
-    console.log('check storage');
+    //console.log('check storage');
     var storage = window[type],
         x = '__storage_test__';
     storage.setItem(x, x);

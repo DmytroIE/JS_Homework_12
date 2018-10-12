@@ -186,9 +186,10 @@ body {
   left: 50%;
   transform: translateX(-50%);
   top: 0px;
-  background-color: rgb(241, 190, 190);
-  padding: 50px 10px 10px;
+  background-color: rgb(190, 214, 241);
+  padding: 40px 10px 10px;
   transition: 1s all;
+  border-radius: 5px;
 
   &--hidden {
     top: -250px;
@@ -200,8 +201,14 @@ body {
   }
 
   &__text {
-    text-align: center;
-    margin-bottom: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    word-wrap: break-word;
+    height: 90px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    border: 1px solid;
   }
 
   &__cls-button {
