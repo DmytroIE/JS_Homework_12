@@ -51,6 +51,7 @@ body {
     padding: 10px;
     border: 1px solid;
     display: flex;
+    margin-bottom: 10px;
   }
 
   &__input {
@@ -66,6 +67,7 @@ body {
     padding: 10px;
     border: 1px solid;
     border-radius: 3px;
+    list-style: none;
   }
 
   &__item {
@@ -74,6 +76,12 @@ body {
     &:last-child {
       margin-bottom: 0;
     }
+  }
+
+  &__default-text {
+    font-size: 18px;
+    font-style: italic;
+    color: #ccc;
   }
 }
 
@@ -186,7 +194,7 @@ body {
   left: 50%;
   transform: translateX(-50%);
   top: 0px;
-  background-color: rgb(190, 214, 241);
+  background-color: rgb(208, 225, 245);
   padding: 40px 10px 10px;
   transition: 1s all;
   border-radius: 5px;
@@ -196,8 +204,11 @@ body {
   }
 
   &__preview {
-    text-align: center;
-    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 auto 30px;
+    width: 200px;
   }
 
   &__text {
@@ -208,7 +219,8 @@ body {
     height: 90px;
     overflow-y: auto;
     margin-bottom: 20px;
-    border: 1px solid;
+    border: 1px solid rgb(221, 171, 95);
+    background-color: rgb(232, 237, 243);
   }
 
   &__cls-button {
@@ -218,7 +230,7 @@ body {
   }
 
   &__icon {
-    width: 20px;
-    height: 20px;
+    width: 25px;
+    height: 25px;
   }
 }

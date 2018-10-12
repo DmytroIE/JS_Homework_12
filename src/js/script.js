@@ -4,23 +4,33 @@ const KEY_PREFIX = 'URLapp';
 //*************************START PROCEDURE*************************/
 
 let listOfURLs = [];
+let theLargestIndexOfLinks = 0;
 
 // работа с localStorage идет параллельно работе с основным массивом,
 // чтобы, если localStorage недоступно, то работа всей остальной части программы
 // оставалась без изменений
 
 if (storageAvailable('localStorage')) {
-  //const keyChecker = /URLapp[\w\d-]*/g;
   for (let i = 0; i < localStorage.length; i++) {
     if (localStorage.key(i).includes(KEY_PREFIX)) {
       const item = JSON.parse(localStorage.getItem(localStorage.key(i)));
-      listOfURLs.unshift(item);
+      listOfURLs.push(item);
+      theLargestIndexOfLinks = Math.max(theLargestIndexOfLinks, item.index);
     }
   }
 }
 
+// локальное хранилище произвольно меняет индексы записей, потому
+// после перезагрузки порядок отображения ссылок может наружаться
+// потому какждой ссылке присваивается индекс, и по нему идет сортировка перед отображением
 
-renderList();
+listOfURLs.sort((a, b) => b.index-a.index);
+
+if (listOfURLs.length  >0) {
+  renderList();
+} else {
+  createDefaulText();
+}
 
 //*************************GET HTML-ELEMENTS********************/
 const forms = {
@@ -62,6 +72,7 @@ function handleHTTPRequestError(err) {
   if (err.code) {
     switch (err.code) {
       case 424: return 'URL is not found or doesn\'t exist in the database'; break;
+      case 429: return 'Too many requests'; break;
       case 502: return 'Server error';break;
       default: return `Error with code ${err.code} has been occured`;
     } 
@@ -92,6 +103,8 @@ function getItem(urlForRequest = 'https://www.google.com', accessKey = '5bb920a2
       if (!UUIDsPlacedIntoList.includes(data.url)){
         const newItem = {...data};
         newItem.uuid = KEY_PREFIX + $.uuid();
+        theLargestIndexOfLinks += 1;
+        newItem.index = theLargestIndexOfLinks;
         listOfURLs.unshift(newItem);
 
         if (storageAvailable('localStorage')) {
@@ -114,7 +127,12 @@ function handleDelete(target) {
   if (storageAvailable('localStorage')) {
     localStorage.removeItem(uuidOfDelItem);
   }
-  renderList();
+
+  if (listOfURLs.length  > 0) {
+    renderList();
+  } else {
+    createDefaulText();
+  }
 }
 
 //****************************RENDER*************************/
@@ -122,9 +140,12 @@ function handleDelete(target) {
 function renderList() {
 
   const markup = listOfURLs.reduce( (acc, curr) => acc + Handlebars.templates.ListItem(curr),'')
-
   document.getElementById('url-list').innerHTML = markup;
 
+}
+
+function createDefaulText() {
+  document.getElementById('url-list').innerHTML = '<li class="urlinfo__default-text">Your bookmarks will be added here...</li>';
 }
 
 //************************SPINNER******************************/
@@ -142,7 +163,7 @@ function removeSpinner() {
 const errModal = document.getElementById('err-modal');
 
 function showErrModal(errMessage) {
-  errModal.querySelector('.err-modal__text').textContent = 'Ups: ' + errMessage;
+  errModal.querySelector('.err-modal__text').textContent = errMessage;
   errModal.classList.remove('err-modal--hidden');
 }
 

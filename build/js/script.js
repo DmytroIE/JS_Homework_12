@@ -6,21 +6,34 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 var KEY_PREFIX = 'URLapp'; //*************************START PROCEDURE*************************/
 
-var listOfURLs = []; // работа с localStorage идет параллельно работе с основным массивом,
+var listOfURLs = [];
+var theLargestIndexOfLinks = 0; // работа с localStorage идет параллельно работе с основным массивом,
 // чтобы, если localStorage недоступно, то работа всей остальной части программы
 // оставалась без изменений
 
 if (storageAvailable('localStorage')) {
-  //const keyChecker = /URLapp[\w\d-]*/g;
   for (var i = 0; i < localStorage.length; i++) {
     if (localStorage.key(i).includes(KEY_PREFIX)) {
       var item = JSON.parse(localStorage.getItem(localStorage.key(i)));
-      listOfURLs.unshift(item);
+      listOfURLs.push(item);
+      theLargestIndexOfLinks = Math.max(theLargestIndexOfLinks, item.index);
     }
   }
-}
+} // локальное хранилище произвольно меняет индексы записей, потому
+// после перезагрузки порядок отображения ссылок может наружаться
+// потому какждой ссылке присваивается индекс, и по нему идет сортировка перед отображением
 
-renderList(); //*************************GET HTML-ELEMENTS********************/
+
+listOfURLs.sort(function (a, b) {
+  return b.index - a.index;
+});
+
+if (listOfURLs.length > 0) {
+  renderList();
+} else {
+  createDefaulText();
+} //*************************GET HTML-ELEMENTS********************/
+
 
 var forms = {
   urlinfo: {
@@ -62,6 +75,10 @@ function handleHTTPRequestError(err) {
         return 'URL is not found or doesn\'t exist in the database';
         break;
 
+      case 429:
+        return 'Too many requests';
+        break;
+
       case 502:
         return 'Server error';
         break;
@@ -99,6 +116,8 @@ function getItem() {
       var newItem = _objectSpread({}, data);
 
       newItem.uuid = KEY_PREFIX + $.uuid();
+      theLargestIndexOfLinks += 1;
+      newItem.index = theLargestIndexOfLinks;
       listOfURLs.unshift(newItem);
 
       if (storageAvailable('localStorage')) {
@@ -121,7 +140,11 @@ function handleDelete(target) {
     localStorage.removeItem(uuidOfDelItem);
   }
 
-  renderList();
+  if (listOfURLs.length > 0) {
+    renderList();
+  } else {
+    createDefaulText();
+  }
 } //****************************RENDER*************************/
 
 
@@ -130,6 +153,10 @@ function renderList() {
     return acc + Handlebars.templates.ListItem(curr);
   }, '');
   document.getElementById('url-list').innerHTML = markup;
+}
+
+function createDefaulText() {
+  document.getElementById('url-list').innerHTML = '<li class="urlinfo__default-text">Your bookmarks will be added here...</li>';
 } //************************SPINNER******************************/
 
 
@@ -147,7 +174,7 @@ function removeSpinner() {
 var errModal = document.getElementById('err-modal');
 
 function showErrModal(errMessage) {
-  errModal.querySelector('.err-modal__text').textContent = 'Ups: ' + errMessage;
+  errModal.querySelector('.err-modal__text').textContent = errMessage;
   errModal.classList.remove('err-modal--hidden');
 }
 
